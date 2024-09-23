@@ -14,6 +14,12 @@ interface Product {
   };
 }
 
+interface Customer {
+  id: string;
+  name: string;
+  email: string;
+}
+
 async function getProducts(): Promise<Product[]> {
   try {
     const response = await axios.get("/api/products");
@@ -27,11 +33,25 @@ async function getProducts(): Promise<Product[]> {
   return [];
 }
 
+async function getCustomerDetails(): Promise<Customer> {
+  try {
+    const response = await axios.get("/api/customers");
+
+    if (response.status === 200) {
+      return response.data.customers;
+    }
+  } catch (err) {
+    console.error("Failed to fetch customers:", err);
+  }
+  return { id: "", name: "", email: "" };
+}
+
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
-  console.log(products);
+  const [customer, setCustomer] = useState<Customer>();
   useEffect(() => {
     getProducts().then((products) => setProducts(products));
+    getCustomerDetails().then((customers) => setCustomer(customers));
   }, []);
   return (
     <div className=" bg-gray-100 min-h-[100%] flex flex-col">
@@ -42,6 +62,15 @@ export default function Products() {
       </header>
       <main className="container mx-auto px-4 py-8">
         <ProductsList products={products} />
+        <hr />
+        <div>
+          Customer Details
+          <div key={customer?.id}>
+            <p>{customer?.id}</p>
+            <p>{customer?.name}</p>
+            <p>{customer?.email}</p>
+          </div>
+        </div>
       </main>
       <footer className="bg-gray-800 text-white mt-auto">
         <div className="container mx-auto px-4 py-6 text-center">

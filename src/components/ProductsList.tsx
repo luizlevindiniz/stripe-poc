@@ -1,6 +1,5 @@
-"use client";
-
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 interface Product {
   id: string;
@@ -19,7 +18,8 @@ interface ProductsPageProps {
 
 async function handleCheckout(
   priceId: string,
-  subscription: string | undefined
+  subscription: string | undefined,
+  customerId: string
 ) {
   try {
     const response = await fetch("/api/checkout_sessions", {
@@ -30,6 +30,7 @@ async function handleCheckout(
       body: JSON.stringify({
         priceId,
         subscription,
+        customerId,
       }),
     });
 
@@ -46,6 +47,7 @@ async function handleCheckout(
   }
 }
 
+const customerId = "cus_Qu5mjfBbdxL7vX";
 export default function ProductsList({
   products,
 }: Readonly<ProductsPageProps>) {
@@ -80,7 +82,8 @@ export default function ProductsList({
                   onClick={() =>
                     handleCheckout(
                       product.default_price,
-                      product.metadata.subscription
+                      product.metadata.subscription,
+                      customerId // depois vai ficar salvo no DB
                     )
                   }
                 >

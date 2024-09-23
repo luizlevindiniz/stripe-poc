@@ -1,13 +1,21 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { stripeServerHandler } from "@/app/stripe/server";
 
+const backendUrl =
+  process.env.NODE_ENV === "production"
+    ? (process.env.PRODUCTION_URL as string)
+    : "http://localhost:3000";
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { priceId, subscription } = body;
+    const { priceId, subscription, customerId } = body;
 
-    if (!priceId) {
-      return NextResponse.json({ error: "Invalid priceId" }, { status: 400 });
+    if (!priceId || !customerId) {
+      return NextResponse.json(
+        { error: "Invalid priceId or customerId" },
+        { status: 400 }
+      );
     }
 
     const session = await stripeServerHandler.checkout.sessions.create({
@@ -17,9 +25,16 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
+      billing_address_collection: "auto",
+      payment_method_types: ["card"],
+      customer_update: {
+        address: "auto",
+        name: "auto",
+      },
       mode: subscription ? "subscription" : "payment",
-      success_url: `${request.headers.get("origin")}/checkout/success`,
-      cancel_url: `${request.headers.get("origin")}/checkout/cancel`,
+      success_url: `${backendUrl}/checkout/success`,
+      cancel_url: `${backendUrl}/checkout/cancel`,
+      customer: customerId,
     });
 
     if (!session.url) {

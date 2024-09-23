@@ -7,11 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "npx biome lint --write .",
-    "format": "npx biome format --write ."
+    "format": "npx biome format --write .",
+    "knip": "npx knip"
   },
   "dependencies": {
-    "@stripe/react-stripe-js": "^2.8.0",
-    "@stripe/stripe-js": "^4.5.0",
     "axios": "^1.7.7",
     "lucide-react": "^0.445.0",
     "next": "14.2.13",
