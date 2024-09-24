@@ -4,7 +4,7 @@ import { stripeServerHandler } from "@/app/stripe/server";
 export async function GET(request: NextRequest) {
   try {
     const product = await stripeServerHandler.products.retrieve(
-      "prod_QuNehApgzQR630"
+      "prod_QuXGWGx2TwSd4d"
     );
 
     return NextResponse.json({ product: product });

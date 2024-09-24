@@ -38,7 +38,7 @@ async function handleCheckout(priceId: string, customerId: string) {
   }
 }
 
-const customerId = "cus_QuNpPo3m5ZYmIa";
+const customerId = "cus_QuXF0OpOUTl75w";
 export default function MembershipCard({
   membership,
 }: Readonly<MembershipPageProps>) {
@@ -57,6 +57,7 @@ export default function MembershipCard({
                   src={membership.images[0]}
                   alt={membership.name}
                   fill
+                  priority
                   sizes="300px"
                 />
               </div>

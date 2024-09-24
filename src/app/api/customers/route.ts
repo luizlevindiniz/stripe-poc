@@ -4,7 +4,7 @@ import { stripeServerHandler } from "@/app/stripe/server";
 export async function GET(request: NextRequest) {
   try {
     const customers =
-      await stripeServerHandler.customers.retrieve("cus_QuNpPo3m5ZYmIa");
+      await stripeServerHandler.customers.retrieve("cus_QuXF0OpOUTl75w");
 
     return NextResponse.json({ customers: customers });
   } catch (error) {

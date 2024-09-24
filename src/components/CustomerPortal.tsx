@@ -32,7 +32,34 @@ async function handleCustomerPortal(customerId: string) {
   }
 }
 
-const customerId = "cus_QuNpPo3m5ZYmIa";
+async function handleRefunding(customerId: string, subscriptionId: string) {
+  try {
+    const response = await fetch("/api/refund", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        customerId,
+        subscriptionId,
+      }),
+    });
+
+    const { error } = await response.json();
+
+    if (error) {
+      console.error("Failed to refund:", error);
+      return;
+    }
+
+    window.location.reload();
+  } catch (err) {
+    console.error("Failed to refund:", err);
+  }
+}
+
+const customerId = "cus_QuXF0OpOUTl75w";
+const subscriptionId = "sub_1Q2iFEDl1vAuDO1VNRQBEhuv";
 
 export default function CustomerPortal({
   customer,
@@ -76,6 +103,15 @@ export default function CustomerPortal({
               </button>
             </div>
           </div>
+        </div>
+        <div>
+          <p>You are eligible for refunding</p>
+          <button
+            onClick={() => handleRefunding(customerId, subscriptionId)}
+            className="w-full bg-sky-500 text-white py-2"
+          >
+            Cancel and Refund
+          </button>
         </div>
       </div>
     </div>

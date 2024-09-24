@@ -1,6 +1,7 @@
 import { stripeServerHandler } from "@/app/stripe/server";
 import type Stripe from "stripe";
 
+/* da para fazer varios eventos do stripe <- pesquisar */
 export async function POST(req: Request) {
   const body = await req.text();
   const signature = req.headers.get("stripe-signature") as string;
@@ -17,9 +18,8 @@ export async function POST(req: Request) {
     return new Response("webhook error", { status: 400 });
   }
 
-  const session = event.data.object as Stripe.Checkout.Session;
-
   if (event.type === "checkout.session.completed") {
+    const session = event.data.object as Stripe.Checkout.Session;
     const subscription = await stripeServerHandler.subscriptions.retrieve(
       session.subscription as string
     );
@@ -32,23 +32,19 @@ export async function POST(req: Request) {
     });
 
     await handleSuccessfulCheckout(customerId, subscription);
-  }
-
-  if (event.type === "invoice.payment_succeeded") {
+  } else if (event.type === "invoice.payment_succeeded") {
+    const session = event.data.object as Stripe.Invoice;
     const subscription = await stripeServerHandler.subscriptions.retrieve(
       session.subscription as string
     );
 
     await handleSuccessfulSubscription(subscription);
-  }
-
-  if (event.type === "customer.subscription.deleted") {
+  } else if (event.type === "customer.subscription.deleted") {
+    const session = event.data.object as Stripe.Subscription;
     const subscription = await stripeServerHandler.subscriptions.retrieve(
-      session.subscription as string
+      session.id as string
     );
-    // const customerId = String(session.customer);
-    const customerId = "cus_QuNpPo3m5ZYmIa";
-
+    const customerId = String(session.customer);
     await stripeServerHandler.customers.update(customerId, {
       metadata: {
         subscription: "false",
@@ -115,13 +111,13 @@ async function handleCancelledSubscription(
     },
   });
   Logica para cancelar
-  da para fazer varios eventos do stripe <- pesquisar
+
   */
   console.log("Subscription cancelled successfully");
 }
 
 /*
-middleware pra checar subscription
+middleware pra checar subscription no DB (fazer um para consultar no stripe)
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { prisma } from '@/lib/prisma';

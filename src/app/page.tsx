@@ -50,6 +50,7 @@ async function getCustomerDetails(): Promise<Customer | null> {
 export default function Products() {
   const [product, setProduct] = useState<Product | null>(null);
   const [customer, setCustomer] = useState<Customer | null>(null);
+  console.log(customer);
   useEffect(() => {
     getCustomerDetails().then((customer) => setCustomer(customer));
     getMembershipDetails().then((product) => setProduct(product));
