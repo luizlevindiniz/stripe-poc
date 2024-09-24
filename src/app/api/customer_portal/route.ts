@@ -9,32 +9,18 @@ const backendUrl =
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { priceId, customerId } = body;
+    const { customerId } = body;
 
-    if (!priceId || !customerId) {
+    if (!customerId) {
       return NextResponse.json(
-        { error: "Invalid priceId or customerId" },
+        { error: "Invalid customerId" },
         { status: 400 }
       );
     }
 
-    const session = await stripeServerHandler.checkout.sessions.create({
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      billing_address_collection: "auto",
-      payment_method_types: ["card"],
-      customer_update: {
-        address: "auto",
-        name: "auto",
-      },
-      mode: "subscription",
-      success_url: `${backendUrl}/checkout/success`,
-      cancel_url: `${backendUrl}/checkout/cancel`,
+    const session = await stripeServerHandler.billingPortal.sessions.create({
       customer: customerId,
+      return_url: `${backendUrl}/`,
     });
 
     if (!session.url) {

@@ -25,6 +25,12 @@ export async function POST(req: Request) {
     );
     const customerId = String(session.customer);
 
+    await stripeServerHandler.customers.update(customerId, {
+      metadata: {
+        subscription: "true",
+      },
+    });
+
     await handleSuccessfulCheckout(customerId, subscription);
   }
 
@@ -34,9 +40,25 @@ export async function POST(req: Request) {
     );
 
     await handleSuccessfulSubscription(subscription);
-
-    return new Response(null, { status: 200 });
   }
+
+  if (event.type === "customer.subscription.deleted") {
+    const subscription = await stripeServerHandler.subscriptions.retrieve(
+      session.subscription as string
+    );
+    // const customerId = String(session.customer);
+    const customerId = "cus_QuNpPo3m5ZYmIa";
+
+    await stripeServerHandler.customers.update(customerId, {
+      metadata: {
+        subscription: "false",
+      },
+    });
+
+    await handleCancelledSubscription(customerId, subscription);
+  }
+
+  return new Response("webhook received", { status: 200 });
 }
 
 async function handleSuccessfulCheckout(
@@ -81,6 +103,21 @@ async function handleSuccessfulSubscription(subscription: Stripe.Subscription) {
   });
 } */
   console.log("Subscription updated successfully");
+}
+
+async function handleCancelledSubscription(
+  customerId: string,
+  subscription: Stripe.Subscription
+) {
+  /* const user = await prisma.user.findUnique({
+    where: {
+      stripeCustomerId: customerId,
+    },
+  });
+  Logica para cancelar
+  da para fazer varios eventos do stripe <- pesquisar
+  */
+  console.log("Subscription cancelled successfully");
 }
 
 /*
